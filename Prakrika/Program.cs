@@ -150,9 +150,11 @@ namespace BackupApp
 
             logger.Info($"Резервное копирование начато. Целевая директория: {backupDir}");
 
-            foreach (string sourceDir in config.SourceDirectories)
+            for (int i = 0; i < config.SourceDirectories.Count; i++)
             {
-                ProcessDirectory(sourceDir, backupDir, config, logger);
+                string sourceDir = config.SourceDirectories[i];
+                string sourceBackupDir = Path.Combine(backupDir, $"Source{i}");
+                ProcessDirectory(sourceDir, sourceBackupDir, config, logger);
             }
 
             logger.Info("Резервное копирование завершено");
