@@ -12,7 +12,6 @@ namespace BackupApp
         public List<string> SourceDirectories { get; set; } = new List<string>();
         public string TargetDirectory { get; set; }
         public string LogLevel { get; set; } = "Info";
-
     }
 
     public class Logger
@@ -57,9 +56,19 @@ namespace BackupApp
     {
         static void Main(string[] args)
         {
-            string configPath = args.Length > 0 ? args[0] : "config.json";
+            // Получаем путь к папке с исполняемым файлом
+            string exeDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string settingsDirectory = Path.Combine(exeDirectory, "Настройки");
 
-            Console.WriteLine($"Поиск конфигурационного файла по пути: {Path.GetFullPath(configPath)}");
+            // Создаем папку "Настройки", если её нет
+            if (!Directory.Exists(settingsDirectory))
+            {
+                Directory.CreateDirectory(settingsDirectory);
+            }
+
+            string configPath = Path.Combine(settingsDirectory, "config.json");
+
+            Console.WriteLine($"Поиск конфигурационного файла по пути: {configPath}");
 
             try
             {
@@ -89,11 +98,10 @@ namespace BackupApp
                 SourceDirectories = new List<string>
                 {
                     @"C:\temp",
-                    @"C:\\Windows\\appcompat"
+                    @"C:\Windows\appcompat"
                 },
-                TargetDirectory = @"С:\Резервные\копии",
-                LogLevel = "Debug",
-
+                TargetDirectory = @"C:\Copy",
+                LogLevel = "Debug"
             };
 
             var options = new JsonSerializerOptions { WriteIndented = true };
@@ -160,8 +168,6 @@ namespace BackupApp
                     return;
                 }
 
-               
-
                 logger.Info($"Обработка директории: {sourceDir}");
 
                 Directory.CreateDirectory(backupDir);
@@ -197,8 +203,6 @@ namespace BackupApp
 
             try
             {
-                
-
                 File.Copy(sourceFile, destFile, overwrite: true);
                 logger.Debug($"Скопирован: {fileName}");
             }
@@ -218,21 +222,6 @@ namespace BackupApp
             {
                 logger.Error($"Ошибка при копировании файла {sourceFile}: {ex.Message}");
             }
-        }
-
-        private static bool FileMatchesPattern(string fileName, string pattern)
-        {
-            if (pattern.StartsWith("*."))
-            {
-                string ext = pattern.Substring(1);
-                return fileName.EndsWith(ext, StringComparison.OrdinalIgnoreCase);
-            }
-            else if (pattern.EndsWith(".*"))
-            {
-                string name = pattern.Substring(0, pattern.Length - 1);
-                return fileName.StartsWith(name, StringComparison.OrdinalIgnoreCase);
-            }
-            return string.Equals(fileName, pattern, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
