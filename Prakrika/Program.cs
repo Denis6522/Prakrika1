@@ -58,7 +58,7 @@ namespace BackupApp
         {
             // Получаем путь к папке с исполняемым файлом
             string exeDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string settingsDirectory = Path.Combine(exeDirectory, "Настройки");
+            string settingsDirectory = Path.Combine(exeDirectory, "Settings");
 
             // Создаем папку "Настройки", если её нет
             if (!Directory.Exists(settingsDirectory))
